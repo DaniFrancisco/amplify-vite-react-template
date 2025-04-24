@@ -10,8 +10,16 @@ const schema = a.schema({
   Todo: a
     .model({
       content: a.string(),
+      menuId: a.id(),
+      menu: a.belongsTo("Menu", "menuId"),
     })
     .authorization((allow) => [allow.publicApiKey()]),
+  Menu: a
+    .model({
+      items: a.string().array(),
+      todos: a.hasMany("Todo", "menuId"),
+    })
+    .authorization((allow) => allow.publicApiKey()),
 });
 
 export type Schema = ClientSchema<typeof schema>;
