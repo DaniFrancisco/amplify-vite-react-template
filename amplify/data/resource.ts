@@ -1,25 +1,33 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 
-/*== STEP 1 ===============================================================
-The section below creates a Todo database table with a "content" field. Try
-adding a new "isDone" field as a boolean. The authorization rule below
-specifies that any user authenticated via an API key can "create", "read",
-"update", and "delete" any "Todo" records.
-=========================================================================*/
 const schema = a.schema({
-  Todo: a
+  Tags: a.enum(["VEGAN", "VEGETARIAN", "GLUTEN_FREE"]),
+  MenuItem: a
     .model({
-      content: a.string(),
-      menuId: a.id(),
-      menu: a.belongsTo("Menu", "menuId"),
+      name: a.string().required(),
+      description: a.string(),
+      price: a.customType({
+        value: a.integer().required(),
+        currency: a.enum(["EUR"]),
+      }),
+      category: a.enum([
+        "FISH",
+        "MEAT",
+        "SIDE",
+        "DESSERT",
+        "DRINK",
+        "APPETIZER",
+      ]),
+      tags: a.ref("Tags").array(),
+      translations: a.customType({
+        pt: a.string().required(),
+        en: a.string().required(),
+        de: a.string().required(),
+        es: a.string().required(),
+        fr: a.string().required(),
+      }),
     })
     .authorization((allow) => [allow.publicApiKey()]),
-  Menu: a
-    .model({
-      items: a.string().array(),
-      todos: a.hasMany("Todo", "menuId"),
-    })
-    .authorization((allow) => allow.publicApiKey()),
 });
 
 export type Schema = ClientSchema<typeof schema>;
